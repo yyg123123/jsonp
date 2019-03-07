@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>防百度联想词</title>
+    <meta charset="utf-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        input {
+            height: 40px;
+            width: 200px;
+            font-size: 20px;
+            outline: none;
+        }
+    
+
+        ul {
+            width: 200px;
+            border: 1px solid #999;
+            display: none;
+        }
+
+        .wrapper {
+            width: 200px;
+            margin: 200px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <input type="text" id="text">
+        <ul>
+        </ul>
+    </div>
+    <script>
+        var oUl = document.getElementsByTagName("ul")[0],
+            oLi = oUl.getElementsByTagName("li"),
+            i = 0,
+            eleLength = null,
+            value = null,
+            timer = null;
+        text.onkeyup = function(e) {
+            clearTimeout(timer);     //配合之后的定时器实现节流
+            var e = e || window.event;
+            if (e.keyCode == 13) {         //监听键盘  实现上下键切换词条 回车进入页面 
+                window.location.href = 'https://www.baidu.com/s?wd=' + value;
+            } else if (e.keyCode == 38 && i > -1) {
+                i--;
+                value = this.value = oLi[i].innerText;
+                for (var j = 0; j < oLi.length; j++) {
+                    oLi[j].style.backgroundColor = "#fff";
+                }
+                oLi[i].style.backgroundColor = "#d6c6c6";
+                return;
+            } else if (e.keyCode == 40) {
+                if (i < eleLength - 1) {
+                    i++;
+                }
+                value = this.value = oLi[i].innerText;
+                for (var j = 0; j < oLi.length; j++) {
+                    oLi[j].style.backgroundColor = "#fff";
+                }
+                oLi[i].style.backgroundColor = "#d6c6c6";
+                return;
+            } else {
+                i = -1;       //如果输入的字符不是上下回车，则初始化选中位置
+            }
+            value = this.value;
+            timer = setTimeout(function() {
+                var oScript = document.createElement("script");
+                oScript.src = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=' + value + '&cb=doJson'
+                oScript.setAttribute('data', 'jsonp')     // 标记哪个是jsonp的script文件
+                document.body.appendChild(oScript);
+            }, 200);
+            var oJsonp = document.getElementsByTagName('script');   // 删除之前的script文件
+            for (var z = 0; z < oJsonp.length; z++) {
+                if (oJsonp[z].getAttribute('data') == 'jsonp') {
+                    document.body.removeChild(oJsonp[z])
+                }
+            }
+
+        }
+
+        function doJson(data) {     //回调函数
+            var data_ = data.s;
+            eleLength = data_.length;
+            var str = '';
+            if (data_.length > 0) {
+                data_.forEach(function(ele, index) {
+                    str += '<li><a href=https://www.baidu.com/s?wd=' + ele + '>' + ele + '</a></li>';
+                })
+                oUl.style.display = "block";
+                oUl.innerHTML = str;
+            } else {
+                oUl.style.display = "none";
+            }
+
+        }
+
+    </script>
+</body>
+
+</html>

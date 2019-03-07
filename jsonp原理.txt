@@ -1,0 +1,7 @@
+1. Web页面用<script>标签引入js文件时不受是否跨域影响。(只要是src这个属性标签都具有跨域能力。比如<script>,<img>,<iframe>)
+
+2. 于是我们把数据放到服务器上，并且数据以JSON形式。
+
+3. 实现定义好的处理跨域获取数据的函数。如function callback(data){}
+
+4. 用src获取数据的时候添加一个参数cb='callback'。服务器会根据参数cb的值返回对应的内容，此内容为以cb对应的值callback函数传入数据。

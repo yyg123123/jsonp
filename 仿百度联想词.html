@@ -9,33 +9,58 @@
             margin: 0;
             padding: 0;
             list-style: none;
+            text-decoration: none;   
         }
-
         input {
             height: 40px;
-            width: 200px;
+            width: 140px;
             font-size: 20px;
             outline: none;
+            box-sizing: border-box;
+            float:left;
+            text-indent: 4px;
         }
-    
-
         ul {
             width: 200px;
             border: 1px solid #999;
             display: none;
+        }
+        ul li{
+            height:25px;
+            line-height: 25px;
         }
 
         .wrapper {
             width: 200px;
             margin: 200px;
         }
-
+        #bdBtn{
+            height:40px;
+            width:60px;
+            background: blue;
+            display: block;
+            float:right;
+            color:#fff;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .clear:after{
+            display: table;
+            content: " ";
+            clear: both;
+        }
+        ul>li:hover{
+            background:#d6c6c6
+        }
     </style>
 </head>
 
 <body>
     <div class="wrapper">
-        <input type="text" id="text">
+        <div class='clear'>
+            <input type="text" id="text"><a href="" id='bdBtn'>百度</a>
+        </div>
         <ul>
         </ul>
     </div>
@@ -45,11 +70,12 @@
             i = 0,
             eleLength = null,
             value = null,
-            timer = null;
+            timer = null,
+            bdBtn = document.getElementById('bdBtn');
         text.onkeyup = function(e) {
-            clearTimeout(timer);     //配合之后的定时器实现节流
+            clearTimeout(timer); //配合之后的定时器实现节流
             var e = e || window.event;
-            if (e.keyCode == 13) {         //监听键盘  实现上下键切换词条 回车进入页面 
+            if (e.keyCode == 13) { //监听键盘  实现上下键切换词条 回车进入页面 
                 window.location.href = 'https://www.baidu.com/s?wd=' + value;
             } else if (e.keyCode == 38 && i > -1) {
                 i--;
@@ -70,16 +96,17 @@
                 oLi[i].style.backgroundColor = "#d6c6c6";
                 return;
             } else {
-                i = -1;       //如果输入的字符不是上下回车，则初始化选中位置
+                i = -1; //如果输入的字符不是上下回车，则初始化选中位置
             }
             value = this.value;
             timer = setTimeout(function() {
+                bdBtn.setAttribute('href', 'https://www.baidu.com/s?wd=' + value)
                 var oScript = document.createElement("script");
                 oScript.src = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=' + value + '&cb=doJson'
-                oScript.setAttribute('data', 'jsonp')     // 标记哪个是jsonp的script文件
+                oScript.setAttribute('data', 'jsonp') // 标记哪个是jsonp的script文件
                 document.body.appendChild(oScript);
             }, 200);
-            var oJsonp = document.getElementsByTagName('script');   // 删除之前的script文件
+            var oJsonp = document.getElementsByTagName('script'); // 删除之前的script文件
             for (var z = 0; z < oJsonp.length; z++) {
                 if (oJsonp[z].getAttribute('data') == 'jsonp') {
                     document.body.removeChild(oJsonp[z])
@@ -88,7 +115,7 @@
 
         }
 
-        function doJson(data) {     //回调函数
+        function doJson(data) { //回调函数
             var data_ = data.s;
             eleLength = data_.length;
             var str = '';
@@ -101,9 +128,16 @@
             } else {
                 oUl.style.display = "none";
             }
-
         }
-
+        
+        text.onblur = function(){
+            oUl.style.display = 'none'
+        }
+        text.onfocus = function(){
+            if(this.value.trim()!= ''){
+                oUl.style.display = 'block'
+            }
+        }
     </script>
 </body>
 
